@@ -60,8 +60,6 @@ def main(argv: List[str]) -> int:
 
         print('  {}address pool ipv6:{} {}'.format(BOLD, NORMAL, network.get('AddressPoolIPv6', '')))
 
-        print('  {}vxlan multicast:{} {}'.format(BOLD, NORMAL, network.get('VxlanAddress', '')))
-
         print('  {}vxlan port:{} {}'.format(BOLD, NORMAL, network.get('VxlanPort', 4789)))
 
         print('  {}vxlan mtu:{} {}'.format(BOLD, NORMAL, network.get('VxlanMTU', 1500)))

@@ -72,13 +72,6 @@ def main(argv: List[str]) -> int:
                 network['AddressPoolIPv6'] = ipaddress.IPv6Network(argv[arg_index + 1], strict=False).compressed
                 arg_index += 2
 
-            elif argv[arg_index] == 'vxlan-addr':
-                if argv[arg_index + 1]:
-                    network['VxlanAddress'] = ipaddress.IPv4Address(argv[arg_index + 1]).compressed
-                else:
-                    network['VxlanAddress'] = None
-                arg_index += 2
-
             elif argv[arg_index] == 'vxlan-id':
                 network['VxlanID'] = int(argv[arg_index + 1])
                 arg_index += 2
@@ -193,7 +186,6 @@ def main(argv: List[str]) -> int:
 
 def print_usage() -> None:
     print('Usage: vwgen set <network> [pool-ipv4 <ipv4/cidr>] [pool-ipv6 <ipv6/cidr>]')
-    print('                           [vxlan-addr <vxlan address>]')
     print('                           [vxlan-id <vxlan-id>] [vxlan-mtu <vxlan-mtu>]')
     print('                           [vxlan-port <vxlan-port>]')
     print('         [node <node name> [addr <ip1/cidr1>[,<ip2/cidr2>]...]')

@@ -100,9 +100,6 @@ def main(argv: List[str]) -> int:
     if node.get('UPnP', False) and node.get('ListenPort', 0) != 0:
         print('PreUp = upnpc -r {} udp &'.format(node['ListenPort']))
 
-    if network.get('VxlanAddress'):
-        print('PostUp = ip link set v%i type vxlan id {} group {} ttl 1 dev %i'.format(network.get('VxlanID', 0), network['VxlanAddress']))
-
     for peer_name, peer in nodes.items():
         if peer_name == node_name:
             continue
