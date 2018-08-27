@@ -1,7 +1,7 @@
 VxWireguard-Generator
 =====================
 
-Utility to generate VXLAN over Wireguard mesh configuration
+Utility to generate VXLAN over Wireguard mesh SD-WAN configuration
 
 ## Setup
 
