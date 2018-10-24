@@ -36,7 +36,8 @@ def main(argv: typing.List[str]) -> int:
         return 0
     try:
         submodule: typing.Any = importlib.import_module('.vwgen_' + argv[1], 'vwgen')
-    except ImportError:
+    except ImportError as e:
+        print("Error: {}".format(e), file=sys.stderr)
         print("vwgen: Invalid command '{}'".format(argv[1]), file=sys.stderr)
         return errno.ENOENT
     submodule.main(argv)
