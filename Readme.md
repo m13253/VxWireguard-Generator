@@ -10,7 +10,7 @@ Requires: Linux, Python >= 3.6, [toml](https://pypi.org/project/toml/), [PyNaCl]
 ```bash
 sudo pip3 install -r requirements.txt
 python3 setup.py build
-sudo python3 setup.py install
+sudo python3 setup.py install --force
 ```
 
 ## Example
