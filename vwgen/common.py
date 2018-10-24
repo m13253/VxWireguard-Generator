@@ -31,7 +31,7 @@ import nacl.bindings
 import random
 import sys
 import toml
-from typing import Any, Callable, cast, Dict, Generic, ItemsView, Iterable, Iterator, KeysView, List, Optional, Set, TextIO, Tuple, TypeVar, ValuesView
+from typing import Any, Callable, cast, Dict, Generic, ItemsView, Iterable, Iterator, KeysView, List, Optional, Set, TextIO, Tuple, TYPE_CHECKING, TypeVar, ValuesView
 
 T = TypeVar('T')
 KT = TypeVar('KT')
@@ -44,11 +44,23 @@ class _FakeListMeta(type(list)):  # type: ignore
     def __hash__(self) -> int:
         return hash(list)
 
+    def __getitem__(self, *args: Any, **kwargs: Any) -> type:
+        return self
+
     def __eq__(self, other: Any) -> bool:
         return id(self) == id(other) or id(list) == id(other)
 
     def __ne__(self, other: Any) -> bool:
         return id(self) != id(other) and id(list) != id(other)
+
+
+if TYPE_CHECKING:
+    _FakeList = List
+else:
+
+    class _FakeList(list, metaclass=_FakeListMeta):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
 
 
 class SortedDict(dict, Generic[KT, VT]):
@@ -74,7 +86,7 @@ class SortedDict(dict, Generic[KT, VT]):
         return repr(self)
 
 
-class SortedSet(list, Generic[T], metaclass=_FakeListMeta):
+class SortedSet(_FakeList[T]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._set: Set[T] = set(*args, **kwargs)
         self._sorted: bool = False
@@ -111,7 +123,7 @@ class SortedSet(list, Generic[T], metaclass=_FakeListMeta):
         return repr(self)
 
 
-class NamePair(list, metaclass=_FakeListMeta):
+class NamePair(_FakeList[str]):
     def __init__(self, name1: str, name2: str) -> None:
         super().__init__((name1, name2))
 
@@ -272,6 +284,6 @@ def generate_pubkey_ipv6(network: Dict[str, Any], node: dict) -> Optional[str]:
         return None
 
     host = ipaddress.IPv6Address(pubkey(secret)[-16:])
-    ipv6 = ipaddress.IPv6Address(int(address_pool.network_address) | (int(host) & int(address_pool.hostmask)))
+    ipv6 = ipaddress.IPv6Address(int(address_pool.network_address) | (int(host) & int(address_pool.hostmask)))  # type: ignore  # "IPv6Network" has not attribute "hostmask"
 
     return ipv6.compressed + '/' + str(address_pool.prefixlen)
