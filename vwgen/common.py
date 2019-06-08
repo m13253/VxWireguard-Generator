@@ -130,7 +130,7 @@ class NamePair(FakeList[str]):
 class Config:
     NetworkType = Dict[str, Any]
     NodeType = Dict[str, Any]
-    NodesType = Dict[str, Config.NodeType]
+    NodesType = Dict[str, NodeType]
     BlacklistType = SortedSet[NamePair]
 
     def __init__(self) -> None:
@@ -177,7 +177,7 @@ class Config:
             raise ValueError('Config not loaded')
         return self._conf_name
 
-    def network(self) -> Config.NetworkType:
+    def network(self) -> NetworkType:
         if 'Network' not in self._conf:
             self._conf['Network'] = SortedDict[str, Any]()
             self._conf['Network']['AddressPoolIPv4'] = '192.168.{}.0/24'.format(random.randint(2, 255))
@@ -188,12 +188,12 @@ class Config:
             self._conf['Network']['VxlanPort'] = 4789
         return cast(Config.NetworkType, self._conf['Network'])
 
-    def nodes(self) -> Config.NodesType:
+    def nodes(self) -> NodesType:
         if 'Node' not in self._conf:
             self._conf['Node'] = SortedDict()
         return cast(Config.NodesType, self._conf['Node'])
 
-    def blacklist(self) -> Config.BlacklistType:
+    def blacklist(self) -> BlacklistType:
         if 'PeerBlacklist' not in self._conf:
             self._conf['PeerBlacklist'] = {'Blacklist': SortedSet()}
         elif 'Blacklist' not in self._conf['PeerBlacklist']:
