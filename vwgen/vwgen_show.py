@@ -111,7 +111,7 @@ def main(argv: List[str]) -> int:
                 print('  {}upnp:{} true'.format(BOLD, NORMAL))
 
             node_blacklist: List[str] = [str(i[1]) for i in blacklist if i[0] == node_name]
-            node_whitelist: List[str] = sorted(set(nodes) - set(node_blacklist))
+            node_whitelist: List[str] = sorted(set(nodes) - set(node_blacklist) - {node_name})
             print('  {}blacklist:{} {}'.format(BOLD, NORMAL, ', '.join(node_blacklist)))
             print('  {}whitelist:{} {}'.format(BOLD, NORMAL, ', '.join(node_whitelist)))
 
