@@ -47,7 +47,7 @@ def main(argv: List[str]) -> int:
 
     network = config.network()
     nodes = config.nodes()
-    node: Optional[dict] = None
+    node: Optional[common.Config.NodeType] = None
     config.save()
 
     arg_index = 3

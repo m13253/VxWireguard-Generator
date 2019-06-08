@@ -31,7 +31,7 @@ import nacl.bindings
 import random
 import sys
 import toml
-from typing import Any, Callable, cast, Dict, Generic, ItemsView, Iterable, Iterator, KeysView, List, Optional, Set, TextIO, Tuple, TYPE_CHECKING, TypeVar, ValuesView
+from typing import Any, cast, Dict, KeysView, ItemsView, Iterator, List, Optional, Set, TextIO, TypeVar, ValuesView
 
 T = TypeVar('T')
 KT = TypeVar('KT')
@@ -54,16 +54,12 @@ class _FakeListMeta(type(list)):  # type: ignore
         return id(self) != id(other) and id(list) != id(other)
 
 
-if TYPE_CHECKING:
-    _FakeList = List
-else:
-
-    class _FakeList(list, metaclass=_FakeListMeta):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
+class FakeList(List[T], metaclass=_FakeListMeta):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
 
 
-class SortedDict(dict, Generic[KT, VT]):
+class SortedDict(Dict[KT, VT]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
@@ -86,7 +82,7 @@ class SortedDict(dict, Generic[KT, VT]):
         return repr(self)
 
 
-class SortedSet(_FakeList[T]):
+class SortedSet(FakeList[T]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._set: Set[T] = set(*args, **kwargs)
         self._sorted: bool = False
@@ -123,7 +119,7 @@ class SortedSet(_FakeList[T]):
         return repr(self)
 
 
-class NamePair(_FakeList[str]):
+class NamePair(FakeList[str]):
     def __init__(self, name1: str, name2: str) -> None:
         super().__init__((name1, name2))
 
@@ -132,11 +128,16 @@ class NamePair(_FakeList[str]):
 
 
 class Config:
+    NetworkType = Dict[str, Any]
+    NodeType = Dict[str, Any]
+    NodesType = Dict[str, Config.NodeType]
+    BlacklistType = SortedSet[NamePair]
+
     def __init__(self) -> None:
-        self._conf: dict = SortedDict()
+        self._conf = SortedDict[str, Any]()
         self._conf_file: Optional[TextIO] = None
         self._conf_name: Optional[str] = None
-        self._writable: bool = False
+        self._writable = False
 
     def __del__(self) -> None:
         try:
@@ -153,7 +154,8 @@ class Config:
             self._conf = SortedDict()
             self._conf_name = conf_name
             return False
-        self._conf = toml.load(self._conf_file, SortedDict)
+        assert self._conf_file is not None
+        self._conf = cast(SortedDict[str, Any], toml.load(self._conf_file, SortedDict))
         return True
 
     def save(self) -> None:
@@ -175,7 +177,7 @@ class Config:
             raise ValueError('Config not loaded')
         return self._conf_name
 
-    def network(self) -> Dict[str, Any]:
+    def network(self) -> Config.NetworkType:
         if 'Network' not in self._conf:
             self._conf['Network'] = SortedDict[str, Any]()
             self._conf['Network']['AddressPoolIPv4'] = '192.168.{}.0/24'.format(random.randint(2, 255))
@@ -184,21 +186,21 @@ class Config:
             # To make a UDP packet 2048 byte so we don't waste too many bytes transmitting fragmented headers
             self._conf['Network']['VxlanMTU'] = 1966
             self._conf['Network']['VxlanPort'] = 4789
-        return cast(SortedDict[str, Any], self._conf['Network'])
+        return cast(Config.NetworkType, self._conf['Network'])
 
-    def nodes(self) -> Dict[str, Dict[str, Any]]:
+    def nodes(self) -> Config.NodesType:
         if 'Node' not in self._conf:
             self._conf['Node'] = SortedDict()
-        return cast(SortedDict[str, Dict[str, Any]], self._conf['Node'])
+        return cast(Config.NodesType, self._conf['Node'])
 
-    def blacklist(self) -> SortedSet[NamePair]:
+    def blacklist(self) -> Config.BlacklistType:
         if 'PeerBlacklist' not in self._conf:
             self._conf['PeerBlacklist'] = {'Blacklist': SortedSet()}
         elif 'Blacklist' not in self._conf['PeerBlacklist']:
             self._conf['PeerBlacklist']['Blacklist'] = SortedSet()
         elif not isinstance(self._conf['PeerBlacklist']['Blacklist'], SortedSet):
             self._conf['PeerBlacklist']['Blacklist'] = SortedSet((NamePair(i, j) for i, j in self._conf['PeerBlacklist']['Blacklist']))
-        return cast(SortedSet[NamePair], self._conf['PeerBlacklist']['Blacklist'])
+        return cast(Config.BlacklistType, self._conf['PeerBlacklist']['Blacklist'])
 
     def _close_file(self) -> None:
         if self._conf_file is None:
@@ -257,8 +259,7 @@ def pubkey(secret: bytes) -> bytes:
     return cast(bytes, nacl.bindings.crypto_scalarmult_base(secret))
 
 
-def generate_pubkey_macaddr(node: dict) -> Optional[str]:
-
+def generate_pubkey_macaddr(node: Config.NodeType) -> Optional[str]:
     if 'PrivateKey' not in node:
         return None
     secret_base64: str = node['PrivateKey']
@@ -270,8 +271,7 @@ def generate_pubkey_macaddr(node: dict) -> Optional[str]:
     return '{:02x}:{:02x}:{:02x}:{:02x}:{:02x}:{:02x}'.format((macaddr[0] & 0xfe) | 0x02, macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5])
 
 
-def generate_pubkey_ipv6(network: Dict[str, Any], node: dict) -> Optional[str]:
-
+def generate_pubkey_ipv6(network: Config.NetworkType, node: Config.NodeType) -> Optional[str]:
     if 'AddressPoolIPv6' not in network:
         return None
     address_pool = ipaddress.IPv6Network(network['AddressPoolIPv6'], strict=False)
@@ -284,6 +284,6 @@ def generate_pubkey_ipv6(network: Dict[str, Any], node: dict) -> Optional[str]:
         return None
 
     host = ipaddress.IPv6Address(pubkey(secret)[-16:])
-    ipv6 = ipaddress.IPv6Address(int(address_pool.network_address) | (int(host) & int(address_pool.hostmask)))  # type: ignore  # "IPv6Network" has not attribute "hostmask"
+    ipv6 = ipaddress.IPv6Address(int(address_pool.network_address) | (int(host) & int(address_pool.hostmask)))
 
     return ipv6.compressed + '/' + str(address_pool.prefixlen)

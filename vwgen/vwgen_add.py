@@ -93,7 +93,7 @@ def print_usage() -> None:
     print('Usage: vwgen add <network> <node> [<node> ...]')
 
 
-def generate_random_ipv4(network: Dict[str, Any], nodes: Dict[str, dict]) -> Optional[str]:
+def generate_random_ipv4(network: common.Config.NetworkType, nodes: common.Config.NodesType) -> Optional[str]:
 
     address_pool = ipaddress.IPv4Network(network['AddressPoolIPv4'], strict=False)
 
@@ -124,7 +124,7 @@ def generate_random_ipv4(network: Dict[str, Any], nodes: Dict[str, dict]) -> Opt
     return ipv4 + '/' + str(address_pool.prefixlen)
 
 
-def generate_random_ipv4ll(nodes: Dict[str, dict]) -> Optional[str]:
+def generate_random_ipv4ll(nodes: common.Config.NodesType) -> Optional[str]:
 
     existing_addresses: Set[str] = set((str(j).split('/', 1)[0] for i in nodes.values() for j in i.get('LinkLayerAddress', [])))
 
