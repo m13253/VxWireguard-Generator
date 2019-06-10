@@ -5,7 +5,7 @@ Utility to generate VXLAN over Wireguard mesh SD-WAN configuration
 
 ## Setup
 
-Requires: Linux, Python >= 3.6, [toml](https://pypi.org/project/toml/), [PyNaCl](https://pypi.org/project/PyNaCl/)
+Requires: Linux, Python >= 3.7, [toml](https://pypi.org/project/toml/), [PyNaCl](https://pypi.org/project/PyNaCl/)
 
 ```bash
 sudo pip3 install -r requirements.txt
