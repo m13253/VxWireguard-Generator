@@ -183,8 +183,10 @@ class Config:
             self._conf['Network']['AddressPoolIPv4'] = '192.168.{}.0/24'.format(random.randint(2, 255))
             self._conf['Network']['AddressPoolIPv6'] = '{:x}:{:x}:{:x}::/80'.format(random.randint(0xfd00, 0xfdff), random.randint(0x1000, 0xffff), random.randint(0x1000, 0xffff))
             self._conf['Network']['VxlanID'] = random.randint(1, 0xffffff)
-            # To make a UDP packet 2048 byte so we don't waste too many bytes transmitting fragmented headers
-            self._conf['Network']['VxlanMTU'] = 1966
+            # To make each UDP packet 1582 bytes
+            self._conf['Network']['VxlanMTU'] = 1500
+            ## To make each UDP packet 2048 bytes
+            #self._conf['Network']['VxlanMTU'] = 1966
             self._conf['Network']['VxlanPort'] = 4789
         return cast(Config.NetworkType, self._conf['Network'])
 
