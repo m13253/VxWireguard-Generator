@@ -30,7 +30,7 @@ vwgen set wg-meshvpn pool-ipv4 172.20.10.0/24 pool-ipv6 2001:db8:42::/64
 # They will have IPv4 addresses fixed and IPv6 addresses dynamically calculated on demand
 vwgen add wg-meshvpn node1 node2 node3
 
-# Set endpoint of node1 and node2, leave empty for node3 so it will do auto-discovery
+# Set endpoint of node1 and node2 to their public IP addresses (either IPv4 or IPv6 will work), leave empty for node3 so it will do auto-discovery
 vwgen set wg-meshvpn node node1 endpoint '[2001:db8:1::1]:1234' listen-port 1234
 vwgen set wg-meshvpn node node2 endpoint '[2001:db8:2::1]:2345' listen-port 2345
 vwgen set wg-meshvpn node node3 listen-port 3456
