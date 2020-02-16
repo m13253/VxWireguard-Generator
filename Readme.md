@@ -42,12 +42,12 @@ vwgen show wg-meshvpn
 # It's a bad habit to log into server with root, this is just a demo
 vwgen showconf wg-meshvpn node1 > node1.conf
 scp node1.conf 'root@[2001:db8:1::1]:/etc/wireguard/wg-meshvpn.conf'
-ssh root@2001:db8:1::1 chmod 600 /etc/wireguard/wg-meshvpn.conf \; systemcel enable --now wg-quick@wg-meshvpn
+ssh root@2001:db8:1::1 chmod 600 /etc/wireguard/wg-meshvpn.conf \; systemctl enable --now wg-quick@wg-meshvpn
 
 # Generate a configuration for node2
 vwgen showconf wg-meshvpn node2 > node2.conf
 scp node1.conf 'root@[2001:db8:2::1]:/etc/wireguard/wg-meshvpn.conf'
-ssh root@2001:db8:2::1 chmod 600 /etc/wireguard/wg-meshvpn.conf \; systemcel enable --now wg-quick@wg-meshvpn
+ssh root@2001:db8:2::1 chmod 600 /etc/wireguard/wg-meshvpn.conf \; systemctl enable --now wg-quick@wg-meshvpn
 
 # The configuration is stored in plaintext TOML format
 less wg-meshvpn.conf
