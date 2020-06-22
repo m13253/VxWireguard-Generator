@@ -83,7 +83,7 @@ def main(argv: List[str]) -> int:
 
             print('  {}private key:{} {}'.format(BOLD, NORMAL, secret_base64))
 
-            print('  {}endpoint:{} {}'.format(BOLD, NORMAL, node.get('Endpoint') or ''))
+            print('  {}public ip:{} {}'.format(BOLD, NORMAL, node.get('Endpoint') or ''))
 
             print('  {}listen port:{} {}'.format(BOLD, NORMAL, node.get('ListenPort', 0)))
 
@@ -92,7 +92,7 @@ def main(argv: List[str]) -> int:
             if pubkey_ipv6:
                 address.append(pubkey_ipv6)
 
-            print('  {}address:{} {}'.format(BOLD, NORMAL, ', '.join(address)))
+            print('  {}vtep address:{} {}'.format(BOLD, NORMAL, ', '.join(address)))
 
             print('  {}allowed ips:{} {}'.format(BOLD, NORMAL, ', '.join(node.get('AllowedIPs', []))))
 
