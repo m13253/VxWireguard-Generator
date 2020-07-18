@@ -3,6 +3,12 @@ VxWireguard-Generator
 
 Utility to generate VXLAN over Wireguard mesh SD-WAN configuration
 
+## Recommendation of RAIT
+
+In case you want a "poor-man's SD-WAN" based on Wireguard and VWGen cannot suit your needs, you may also want to consider [RAIT](https://gitlab.com/NickCao/RAIT).
+
+---
+
 ## Setup
 
 Requires: Linux, Python >= 3.7, [toml](https://pypi.org/project/toml/), [PyNaCl](https://pypi.org/project/PyNaCl/)
