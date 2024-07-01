@@ -61,7 +61,7 @@ less wg-meshvpn.conf
 
 ## Routing protocol
 
-Now you have all your nodes on the save virtual Ethernet.
+Now you have all your nodes on the same virtual Ethernet.
 
 You may run routing protocol designed for mesh networks (e.g.
 [Babel](https://github.com/jech/babeld), EIGRP) on interface `vwg-meshvpn` to
